@@ -49,7 +49,7 @@ abstract class WordRoomDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             WordRoomDatabase.class, "word_database")
-                            .addCallback(sRoomDatabaseCallback)
+                           // .addCallback(sRoomDatabaseCallback)
                             .build();
                 }
             }
@@ -77,9 +77,9 @@ abstract class WordRoomDatabase extends RoomDatabase {
                 WordDao dao = INSTANCE.wordDao();
                 dao.deleteAll();
 
-                Word word = new Word("Hello");
+                Word word = new Word("Hello","eng");
                 dao.insert(word);
-                word = new Word("World");
+                word = new Word("World", "eng");
                 dao.insert(word);
             });
         }

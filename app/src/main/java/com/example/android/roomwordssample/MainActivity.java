@@ -16,6 +16,7 @@ package com.example.android.roomwordssample;
  * limitations under the License.
  */
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -37,7 +38,8 @@ import androidx.recyclerview.widget.RecyclerView;
 public class MainActivity extends AppCompatActivity {
 
     public static final int NEW_WORD_ACTIVITY_REQUEST_CODE = 1;
-
+    public static final int RESULT_UPDATED = 25;
+    public static Context mcontext;
     private WordViewModel mWordViewModel;
 
     @Override
@@ -72,15 +74,31 @@ public class MainActivity extends AppCompatActivity {
                 startActivityForResult(intent, NEW_WORD_ACTIVITY_REQUEST_CODE);
             }
         });
+
+        setContext(this);
+    }
+
+    public static Context getContext(){
+       return mcontext;
+    }
+
+    public static void setContext(Context context){
+        mcontext = context;
     }
 
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
         if (requestCode == NEW_WORD_ACTIVITY_REQUEST_CODE && resultCode == RESULT_OK) {
-            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY));
+            Word word = new Word(data.getStringExtra(NewWordActivity.EXTRA_REPLY),data.getStringExtra(NewWordActivity.LANGUAGE));
             mWordViewModel.insert(word);
-        } else {
+        }else if(requestCode == RESULT_UPDATED){
+            Toast.makeText(
+                    getApplicationContext(),
+                    "Item Actualizado",
+                    Toast.LENGTH_LONG).show();
+        }
+        else {
             Toast.makeText(
                     getApplicationContext(),
                     R.string.empty_not_saved,

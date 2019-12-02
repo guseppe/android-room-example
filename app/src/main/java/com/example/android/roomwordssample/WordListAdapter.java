@@ -16,25 +16,55 @@ package com.example.android.roomwordssample;
  * limitations under the License.
  */
 
+import android.app.AlertDialog;
 import android.content.Context;
+
+import androidx.lifecycle.ViewModelProvider;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.lifecycle.ViewModelStoreOwner;
 import androidx.recyclerview.widget.RecyclerView;
+
+import android.content.Intent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
 
 
 public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordViewHolder> {
-
+    private final WordViewModel mWordViewModel;
+    private Context context;
     class WordViewHolder extends RecyclerView.ViewHolder {
         private final TextView wordItemView;
-
+        private final TextView languageItemView;
+        private Word currentElement;
         private WordViewHolder(View itemView) {
             super(itemView);
             wordItemView = itemView.findViewById(R.id.textView);
+            languageItemView = itemView.findViewById(R.id.textView2);
+            wordItemView.setOnLongClickListener(v->{
+                AlertDialog.Builder confirmation = new AlertDialog.Builder(context);
+                confirmation.setTitle("Confirmar eliminación")
+                        .setMessage("Estas a punto de eliminar un registro, deseas continuar?")
+                        .setPositiveButton("Si",(dialog,id)->{
+                            mWordViewModel.remove(currentElement);
+                            Toast.makeText(context,"Item eliminado", Toast.LENGTH_SHORT).show();
+                        })
+                        .setNegativeButton("No",(dialog, id) -> {
+                            dialog.cancel();
+                        })
+                        .show();
+                return true;
+            });
+            wordItemView.setOnClickListener(v->{
+                Intent intent = new Intent(context, NewWordActivity.class);
+                intent.putExtra("CURRENTWORD", currentElement);
+                context.startActivity(intent);
+            });
         }
     }
 
@@ -43,6 +73,8 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
 
     WordListAdapter(Context context) {
         mInflater = LayoutInflater.from(context);
+        this.context = context;
+        mWordViewModel = new ViewModelProvider((ViewModelStoreOwner) context).get(WordViewModel.class);
     }
 
     @Override
@@ -56,6 +88,8 @@ public class WordListAdapter extends RecyclerView.Adapter<WordListAdapter.WordVi
         if (mWords != null) {
             Word current = mWords.get(position);
             holder.wordItemView.setText(current.getWord());
+            holder.languageItemView.setText(current.getLanguage());
+            holder.currentElement = current;
         } else {
             // Covers the case of data not being ready yet.
             holder.wordItemView.setText("No Word");

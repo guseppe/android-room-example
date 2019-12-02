@@ -21,6 +21,8 @@ import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.annotation.NonNull;
 
+import java.io.Serializable;
+
 /**
  * A basic class representing an entity that is a row in a one-column database table.
  *
@@ -33,19 +35,47 @@ import androidx.annotation.NonNull;
  */
 
 @Entity(tableName = "word_table")
-public class Word {
+public class Word implements Serializable {
 
-    @PrimaryKey
+
+    @NonNull
+    @PrimaryKey(autoGenerate = true)
+    @ColumnInfo(name = "id")
+    private int id;
+
     @NonNull
     @ColumnInfo(name = "word")
     private String mWord;
 
-    public Word(@NonNull String word) {
+    @NonNull
+    @ColumnInfo(name = "language")
+    private String language;
+
+    public Word(@NonNull String word, String language) {
         this.mWord = word;
+        this.language = language;
     }
 
     @NonNull
     public String getWord() {
         return this.mWord;
+    }
+    public String getLanguage() {
+        return this.language;
+    }
+    public int getId() {
+        return id;
+    }
+
+    public void setWord(String word){
+        this.mWord = word;
+    }
+
+    public void setLanguage(String language){
+        this.language = language;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 }
